@@ -204,9 +204,6 @@ const UIController = (() => {
             DOMInput.O.classList.toggle('active');
     };
 
-    // this check if there is any msg being displayed on the screen, return's true or false
-    const anyActiveMsg = () => DOMInput.winWindow.style.display === 'block';
-
     ///// listen to changes in setting
     //pending when user click outside of the panel it should be closed automatically
     DOMInput.setting.addEventListener('click', () =>{
@@ -265,7 +262,8 @@ const UIController = (() => {
             DOMInput.winWindow.style.display = 'block';
         },
 
-        isMsgDisplayed : () => anyActiveMsg(),
+        // this check if there is any msg being displayed on the screen, return's true or false
+        isMsgDisplayed : () => DOMInput.winWindow.style.display === 'block',
 
         getDOMInput: () => DOMInput
     };
@@ -279,11 +277,12 @@ const controller = ((UICtrl, logicCtrl) => {
     const setupEventListeners = () => {
         const DOM = UICtrl.getDOMInput();
         const fieldArr = Object.values(DOM.field);   // converting object to array
+        
         fieldArr.forEach( el => {
             el.addEventListener('click', getUserInput);
         });
 
-        // set display property of the setting panel to none(to default)
+        // hide the setting panel (default)
         DOM.setPanel.style.display = 'none';
 
         // listen to changes in setting
