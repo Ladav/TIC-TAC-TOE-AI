@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Comaptible" content="ie=edge">
+
+        <link href="https://unpkg.com/ionicons@4.5.10-0/dist/css/ionicons.min.css" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Monoton&display=swap" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="css/style.css">
+        <link rel="stylesheet" type="text/css" href="css/media.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css">
+        
+        
+        <title>tic-tac-toe</title>
+    </head>
+    <body>
+        <div class="title">
+            <p>TIC&mdash;TAC&mdash;TOE</p>
+        </div>
+        
+        <div class="main-settings">
+            <div class="settings-icon">
+                <a class=""><i class="ion-ios-settings"></i></a>
+            </div>
+            <ul>
+                <li class="btn-human">
+                    <img src="css/img/looking1.svg" alt="human player">
+                    VS
+                    <img src="css/img/looking.svg" alt="human player">
+                </li>
+                <li class="btn-AI">
+                    <img src="css/img/bored.svg" alt="human player">
+                    VS
+                    <img src="css/img/robot2.svg" alt="human player">
+                </li>
+            </ul>
+        </div>
+
+        <div class="window">
+
+            <div class="winner">
+                <p>The Winner is </p>
+                <div class="player">X</div>
+            </div>
+
+            <div class="x-container">
+                <div class='X'>X</div>
+            </div>
+
+            <div class="main-container">
+                <div class="container">
+                    <div class="row row--1">
+                        <div class='element element--1__1'>X</div>
+                        <div class='element element--1__2'>O</div>
+                        <div class='element element--1__3'>X</div>
+                    </div>
+                    <div class="row row--2">
+                        <div class='element element--2__1'>O</div>
+                        <div class='element element--2__2'>X</div>
+                        <div class='element element--2__3'>X</div>
+                    </div>
+                    <div class="row row--3">
+                        <div class='element element--3__1'>X</div>
+                        <div class='element element--3__2'>X</div>
+                        <div class='element element--3__3'>O</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="o-container">
+                <div class='O'>O</div>
+            </div>
+        </div>
+    </body>
+    <script src="./js/script.js"></script>
+</html>
