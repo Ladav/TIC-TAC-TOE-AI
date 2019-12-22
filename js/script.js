@@ -6,14 +6,6 @@ const logicController = (() => {
     let playerActive = 'X';
     let vsAI = true;  // if playing against AI--> (player vs AI) or not
 
-    const resetDataStructure = () => {
-        for(let i = 0; i < 3; i++){
-            for(let j = 0; j < 3; j++){
-                matrix[i][j] = ' ';
-            }
-        }
-    };
-
     const scrapeData = (data) => {
         let row, col, temp;
         // ex- data = 'element--1__1'
@@ -48,17 +40,6 @@ const logicController = (() => {
         }
         // 4) No winnig condition
         return undefined;
-    };
-
-    const isMatrixFull = () => {
-        for(let i = 0; i < 3; i++){
-            for(let j = 0; j < 3; j++){
-                if(matrix[i][j] === ' ') {
-                    return false;
-                }
-            }
-        }
-        return true;
     };
 
     const getAvailFields = (currentMatrix) => {     // using these AI will test all moves
@@ -137,17 +118,33 @@ const logicController = (() => {
     return{
             getAI: () => vsAI,
             setAI: (state) => { vsAI = state },
-
+            
             getPlayer: () => playerActive,
             setPlayer: (state) => { playerActive = state },
-
-            resetDS: () => resetDataStructure(),    // Initialize matrix
-
-            isFull: () => isMatrixFull(),   // check if the matrix is fully filled
             
             checkWinner: () => checkMatrix(),   // check if Active player is the winner
+            togglePlayer:  () => { playerActive = playerActive === 'O' ? 'X' : 'O'; },   // Active Player
 
-            userInput: (dataString) => {
+            resetDS: () => {    // Initialize matrix
+                for(let i = 0; i < 3; i++){
+                    for(let j = 0; j < 3; j++){
+                        matrix[i][j] = ' ';
+                    }
+                }
+            },    
+
+            isMatrixFull: () => {     // check if the matrix is fully filled
+                for(let i = 0; i < 3; i++){
+                    for(let j = 0; j < 3; j++){
+                        if(matrix[i][j] === ' ') {
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            },   
+            
+            userMove: (dataString) => {
                 let data;
                 // scraping the required data from the dataString
                 data = scrapeData(dataString);
@@ -155,10 +152,7 @@ const logicController = (() => {
                 matrix[data.row][data.col] = playerActive;
             },
 
-            togglePlayer:  () => { playerActive = playerActive === 'O' ? 'X' : 'O'; },   // Active Player
-
-            // aiPlayer
-            aiPlayer: () => {
+            aiMove: () => {
                 let move = {};    //   {score:number, index:{row, col}}
                 move = minimax(matrix);
 
@@ -187,10 +181,10 @@ const UIController = (() => {
             field_3_2 : document.querySelector('.element--3__2'),
             field_3_3 : document.querySelector('.element--3__3')
         },
-        allFields : document.querySelectorAll('.element'),
+        allFields: document.querySelectorAll('.element'),
         X: document.querySelector('.X'),   
         O: document.querySelector('.O'),
-        winWindow: document.querySelector('.winner'),
+        window: document.querySelector('.winner'),
         winner: document.querySelector('.player'),
         textDraw: document.querySelector('.winner p'),
         setting: document.querySelector('.settings-icon a'),
@@ -198,20 +192,13 @@ const UIController = (() => {
         btn_Human: document.querySelector('.btn-human'),
         btn_AI: document.querySelector('.btn-AI')
     };
-
-    const setPlayerActive = () => {
-            DOMInput.X.classList.toggle('active');
-            DOMInput.O.classList.toggle('active');
-    };
-
-    ///// listen to changes in setting
-    //pending when user click outside of the panel it should be closed automatically
-    DOMInput.setting.addEventListener('click', () =>{
-        DOMInput.setPanel.style.display = DOMInput.setPanel.style.display === 'none' ? 'block' : 'none';
-        //DOMInput.settingPanel.style.display = (DOMInput.settingPane)
-    });
-
+    
     return {
+        getDOMInput: () => DOMInput,
+    
+        // this check if there is any msg being displayed on the screen, return's true or false
+        isMsgDisplayed : () => DOMInput.window.style.display === 'block',
+
         resetUI : (activePlayer) => {   // reset the game's UI
             // clean the Matrix
             Array.from(DOMInput.allFields).forEach(field => field.textContent = ' ');
@@ -220,18 +207,19 @@ const UIController = (() => {
             DOMInput[activePlayer].classList.add('active');
 
             // remove the congrats message from the previous gameplay
-            DOMInput.winWindow.style.display = 'none';
+            DOMInput.window.style.display = 'none';
         },
         
         updateField : (field, player) => {   // updating UI against user select
             field.textContent = player;
         },
 
-        updateActivePlayer : (activePlayer) => {   // when X vs O
+        updateActivePlayer : () => {   // when X vs O
             // when new game start ex- X vs O after a match of ex- X vs AI, the textContent ('AI') have to revert back to O
             DOMInput.O.textContent = 'O';
-
-            setPlayerActive();
+            // change(highlight) the active player
+            DOMInput.X.classList.toggle('active');
+            DOMInput.O.classList.toggle('active');
         },
 
         updateAI: () => {   // when X vs AI
@@ -249,7 +237,7 @@ const UIController = (() => {
 
             // 2-render congratulations message
             DOMInput.textDraw.style.color = 'rgba(236,226,29,1)';
-            DOMInput.winWindow.style.display = 'block';
+            DOMInput.window.style.display = 'block';
         },
 
         renderDraw: () => {
@@ -259,13 +247,8 @@ const UIController = (() => {
             
             // 2-render congratulations message
             DOMInput.textDraw.style.color = '#222';
-            DOMInput.winWindow.style.display = 'block';
-        },
-
-        // this check if there is any msg being displayed on the screen, return's true or false
-        isMsgDisplayed : () => DOMInput.winWindow.style.display === 'block',
-
-        getDOMInput: () => DOMInput
+            DOMInput.window.style.display = 'block';
+        }
     };
 })();
 
@@ -278,39 +261,41 @@ const controller = ((UICtrl, logicCtrl) => {
         const DOM = UICtrl.getDOMInput();
         const fieldArr = Object.values(DOM.field);   // converting object to array
         
-        fieldArr.forEach( el => {
+        fieldArr.forEach( el => {   // setting up listener's on all input fields in the matrix
             el.addEventListener('click', getUserInput);
         });
 
-        // hide the setting panel (default)
-        DOM.setPanel.style.display = 'none';
+        DOM.setPanel.style.display = 'none';    // hide the setting panel (default)
+
+        DOM.setting.addEventListener('click', () =>{    // when user click the settings icon
+            DOM.setPanel.style.display = DOM.setPanel.style.display === 'none' ? 'block' : 'none';
+        });
 
         // listen to changes in setting
         DOM.btn_Human.addEventListener('click', () => {     // human vs human
-            logicCtrl.setAI(false);     // 1-turn off the AI flag
+            logicCtrl.setAI(false);                         // 1-turn off the AI flag
  
-            UICtrl.updateActivePlayer(logicCtrl.getPlayer());   // 2-set the second player as the 'O'
-           
-            reset();    // 3-reset the game
+            UICtrl.updateActivePlayer();                    // 2-set the second player as the 'O'
+            reset();                                        // 3-reset the game
 
-            DOM.setPanel.style.display = 'none';    // 4-hide the setting panel again
+            DOM.setPanel.style.display = 'none';            // 4-hide the setting panel again
         });
 
         DOM.btn_AI.addEventListener('click', () => {    // human vs AI
-            logicCtrl.setAI(true);    // 1-turn off the AI flag
+            logicCtrl.setAI(true);                      // 1-turn off the AI flag
             
-            reset();    // 2-reset the game
-            moveAI();     // 3-set active player to 'X', so that correct entry is displayed, as user will play first
+            reset();                                    // 2-reset the game
+            AIMove();                                   // 3-set active player to 'X', so that correct entry is displayed, as user will play first
 
-            DOM.setPanel.style.display = 'none';    // 4-hide the setting panel again
+            DOM.setPanel.style.display = 'none';        // 4-hide the setting panel again
         });
     };
 
-    const moveAI = () => {
+    const AIMove = () => {
         if(logicCtrl.getAI() === true && logicCtrl.getPlayer() === 'O') {
              // 1- AI makes its move
-            const coords = logicCtrl.aiPlayer();
-            const field = document.querySelector(`.element--${coords.row + 1}__${coords.col + 1}`);
+            const cords = logicCtrl.aiMove();
+            const field = document.querySelector(`.element--${cords.row + 1}__${cords.col + 1}`);
             // 2-render change over UI
             UICtrl.updateField(field, logicCtrl.getPlayer());
             // 3-check if AI won
@@ -327,7 +312,7 @@ const controller = ((UICtrl, logicCtrl) => {
         // Check matrix ,if the required box is empty and if any message is being displayed 
         if(value === ' ' && !UICtrl.isMsgDisplayed()){
             // 2-Update DS matrix
-            logicCtrl.userInput(field.className);
+            logicCtrl.userMove(field.className);
 
             // 3-Update UI
             UICtrl.updateField(event.target, logicCtrl.getPlayer());
@@ -335,15 +320,18 @@ const controller = ((UICtrl, logicCtrl) => {
             // 4-check if the player won the match
             check();
 
-            // 5- when playing against AI ('O') -- else just change active user	
-            if(logicCtrl.getAI() === true) {
-                logicCtrl.togglePlayer();   // change user to AI (make changes to DataStructure only)
-                moveAI();
+            // 5-change active user (next player's trun)
+            logicCtrl.togglePlayer();
+
+            // aiplayer making move 	
+            if(logicCtrl.getAI() == true) {
+                if(!UICtrl.isMsgDisplayed()) {  // if any msg being display then no changes are allowed
+                    AIMove();
+                }
             } 
-            else {   // change user - for human vs human 
-                logicCtrl.togglePlayer();   // 1-change active player, between 'X' and 'O' (change turn)
-                UICtrl.updateActivePlayer();   // 2-render changes on UI(highlight the player who will play next move)
-            }
+            else {   // pass the control to other player - for human vs human
+                UICtrl.updateActivePlayer();   // 1-update active player on UI
+            }            	
         }
     };
 
@@ -364,7 +352,7 @@ const controller = ((UICtrl, logicCtrl) => {
         setTimeout(() => {
             reset();
             if(isDraw === true) { 
-                moveAI();
+                AIMove();
             }
         }, 2000);
     };
@@ -378,7 +366,7 @@ const controller = ((UICtrl, logicCtrl) => {
             
             clearMsg(isDraw);     // wait for 2 second then reset UI
         }
-        else if(logicCtrl.isFull()) {    //  if matrix is full
+        else if(logicCtrl.isMatrixFull()) {    //  if matrix is full
             UICtrl.renderDraw();    // 1-render a draw msg
             
             isDraw = true;
