@@ -205,6 +205,8 @@ const UIController = (() => {
 
             // highlight active player
             DOMInput[activePlayer].classList.add('active');
+            const otherPlayer = activePlayer === 'X' ? 'O' : 'X';
+            DOMInput[otherPlayer].classList.remove('active');
 
             // remove the congrats message from the previous gameplay
             DOMInput.window.style.display = 'none';

@@ -1,18 +1,13 @@
 /**
   1- in android when i click on a field it get selected and opacity get set at 0.5 and doesn't change when i un-touch that 
   2- instead of displaying popup msg, on winning and draw, try implementing little animation such as highlight the pattern of the winning situation and in case of draw just highlight the whole ttt fields
-  3- use animation
-  4- hide the setting panel when user click outside the panel
 */
-
 /*  group the redundant statements of different class
 *   highlight the line pattern upon the winning and display a slide message with adequate msg and ask to try again,
 *   try add animation on the settings button it should roll on click
 *   make sure the text is have proper padding from all sides
 *   i want the component(bar) to float over the other component when someone clicks on setting 
 */
-
-
 
 * {
     margin: 0;
@@ -35,15 +30,7 @@ body {
     user-select: none; 
 }
 
-.clearfix {zoom: 1}     /* testing */
-.clearfix:after {
-    content: "";
-    display: table;
-    clear: both;
-}
-
 .title { 
-    display: block;
     position: absolute;
     margin: 20px 0 0 30px;
     font-size: 40px;
@@ -58,10 +45,8 @@ body {
 }
 
 .window {
-
-    position: relative;
     max-width: 1024px;
-    min-width: 340px;
+    min-width: 350px;
     height: 80%;
     margin: 0 auto;
 }
@@ -80,7 +65,7 @@ body {
     display: inline-block;
     width: 100%;
     font-size: 50px;
-    padding-right: 13px;
+    padding: 10px 13px 0 0;
     text-align: end;
 }
 
@@ -98,11 +83,6 @@ ul {
     display: none;
 }
 
-ul {
-    animation-duration: 1s;
-    animation-delay: 0s;
-}
-
 li { 
     border: 5px solid rgb(236, 236, 236);
     border-radius: 30px;
@@ -118,23 +98,14 @@ li,
 
 
 
-
-
-
-
-
-
-
-
-
-
 /* congratualations message */
 .winner {
-    display: none;
+    display: block;
     position: absolute;
+    left: 0; right: 0; bottom: 0; top: 0;
     width: 550px;   
     height: 160px;
-    margin: 60px 237px 0 237px; /* 1024 - 550 = 474 --> 237 + 237*/
+    margin: auto;
     background-color: #fff;
     z-index: 9999;
     border: 10px solid #fff;
@@ -174,7 +145,7 @@ li,
 }
 
 .x-container{ float: left; }
-.o-container{ float: right; z-index: 1; }
+.o-container{ float: right; }
 
 .X, .O { line-height: 180px; }
 
