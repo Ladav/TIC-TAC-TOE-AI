@@ -186,5 +186,7 @@ li,
     line-height: 80px;
 }
 
-.element:hover { opacity: 0.5; }
-.element:active { opacity: 1; }
+@media not all and (pointer: coarse) {
+    .element:hover { opacity: 0.5; }
+}
+.element:active { opacity: 0.5; }
